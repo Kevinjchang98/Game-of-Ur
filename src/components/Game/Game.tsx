@@ -10,7 +10,22 @@ function Game() {
 
     const rollDice = () => {
         // TODO: Actually generate a new roll
-        setRoll(roll + 1);
+        // 4 dice and each with a 50/50 chance in 0 and 1, the probability will be:
+        // 0: 6.25%, 1: 25%, 2: 37.5%, 3: 25%, 4: 6.25%
+        setRoll( () => {
+                var num = Math.random();
+                if (num < 0.0625)
+                    return 0;
+                else if (num < (0.0625 + 0.25))
+                    return 1;
+                else if (num < (0.0625 + 0.25 + 0.375))
+                    return 2;
+                else if (num < (0.0625 + 0.25 + 0.375 + 0.25))
+                    return 3;
+                else
+                    return 4;
+            }
+        )
 
         // Swap current player
         setCurrPlayer(currPlayer == 0 ? 1 : 0);
