@@ -1,7 +1,9 @@
-import { Canvas } from '@react-three/fiber';
 import { useState } from 'react';
+import { Canvas, useLoader } from '@react-three/fiber';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
 import styles from './Game.module.css';
+import { OrbitControls } from '@react-three/drei';
 
 function Game() {
     // Keep track of current roll
@@ -16,14 +18,15 @@ function Game() {
         setCurrPlayer(currPlayer == 0 ? 1 : 0);
     };
 
+    const board = useLoader(GLTFLoader, 'src/assets/board.gltf');
+
     return (
         <>
             <div className={styles.canvasContainer}>
                 <Canvas>
-                    <mesh>
-                        <boxGeometry />
-                        <meshStandardMaterial />
-                    </mesh>
+                    <primitive object={board.scene} />
+                    <ambientLight />
+                    <OrbitControls />
                 </Canvas>
             </div>
 
