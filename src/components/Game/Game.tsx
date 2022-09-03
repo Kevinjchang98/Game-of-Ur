@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import { Canvas, useLoader } from '@react-three/fiber';
+import { OrbitControls } from '@react-three/drei';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
 import styles from './Game.module.css';
-import { OrbitControls } from '@react-three/drei';
 
 function Game() {
     // Keep track of current roll
@@ -26,10 +26,10 @@ function Game() {
         setCurrPlayer(currPlayer == 0 ? 1 : 0);
     };
 
-    const board = useLoader(GLTFLoader, 'src/assets/board.gltf');
+    const board = useLoader(GLTFLoader, 'public/board.gltf');
 
     return (
-        <>
+        <Suspense fallback={null}>
             <div className={styles.canvasContainer}>
                 <Canvas>
                     <primitive object={board.scene} />
@@ -43,7 +43,7 @@ function Game() {
                 <p>Current player: {currPlayer}</p>
                 <button onClick={rollDice}>Roll</button>
             </div>
-        </>
+        </Suspense>
     );
 }
 
