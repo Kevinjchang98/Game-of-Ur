@@ -26,7 +26,7 @@ function Game() {
         setCurrPlayer(currPlayer == 0 ? 1 : 0);
     };
 
-    const board = useLoader(GLTFLoader, 'public/board.gltf');
+    const board = useLoader(GLTFLoader, '/board.gltf');
 
     return (
         <Suspense fallback={null}>
