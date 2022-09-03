@@ -27,7 +27,7 @@ function Game() {
                 </Canvas>
             </div>
 
-            <div>
+            <div className={styles.menuContainer}>
                 <p>Current roll: {roll}</p>
                 <p>Current player: {currPlayer}</p>
                 <button onClick={rollDice}>Roll</button>
