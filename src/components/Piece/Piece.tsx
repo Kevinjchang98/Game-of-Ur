@@ -5,8 +5,6 @@ interface PieceProps {
     roll: number;
 }
 
-// TODO: Properly size board
-const GRID_SIZE_MULTIPLIER = 0.72; // Multiplier for grid transformations
 const PIECE_HEIGHT = 0.4; // Height of pieces above board
 const PIECE_SCALE = 0.4;
 
@@ -14,7 +12,7 @@ function Piece({ roll }: PieceProps) {
     const [position, setPosition] = useState<Array<number>>([
         0,
         PIECE_HEIGHT,
-        -3.5 * GRID_SIZE_MULTIPLIER,
+        -3.5,
     ]);
 
     const { positionAnimated } = useSpring({
@@ -24,11 +22,7 @@ function Piece({ roll }: PieceProps) {
     // Moves piece
     const movePiece = () => {
         // TODO: Constrain possible positions within board
-        setPosition([
-            position[0],
-            position[1],
-            position[2] + GRID_SIZE_MULTIPLIER * roll,
-        ]);
+        setPosition([position[0], position[1], position[2] + roll]);
     };
 
     return (
