@@ -36,7 +36,7 @@ function Game() {
                     <primitive object={board.scene} scale={5} />
                     <ambientLight />
                     <OrbitControls />
-                    <Piece roll={roll} />
+                    <Piece roll={roll} player={0} />
                 </Canvas>
             </div>
 

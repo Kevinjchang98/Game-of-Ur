@@ -3,12 +3,13 @@ import { useState } from 'react';
 
 interface PieceProps {
     roll: number;
+    player: number;
 }
 
-const PIECE_HEIGHT = 0.4; // Height of pieces above board
+const PIECE_HEIGHT = 0.5; // Height of pieces above board
 const PIECE_SCALE = 0.4;
 
-function Piece({ roll }: PieceProps) {
+function Piece({ roll, player }: PieceProps) {
     const [position, setPosition] = useState<Array<number>>([
         0,
         PIECE_HEIGHT,
@@ -32,7 +33,7 @@ function Piece({ roll }: PieceProps) {
             onClick={movePiece}
         >
             <boxGeometry />
-            <meshStandardMaterial color={'blue'} />
+            <meshStandardMaterial color={player == 0 ? 'blue' : 'red'} />
         </animated.mesh>
     );
 }
