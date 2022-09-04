@@ -21,17 +21,21 @@ function Piece({ roll }: PieceProps) {
         positionAnimated: position,
     });
 
+    // Moves piece
+    const movePiece = () => {
+        // TODO: Constrain possible positions within board
+        setPosition([
+            position[0],
+            position[1],
+            position[2] + GRID_SIZE_MULTIPLIER * roll,
+        ]);
+    };
+
     return (
         <animated.mesh
             scale={PIECE_SCALE}
             position={positionAnimated as any}
-            onClick={() =>
-                setPosition([
-                    0,
-                    PIECE_HEIGHT,
-                    position[2] + GRID_SIZE_MULTIPLIER * roll,
-                ])
-            }
+            onClick={movePiece}
         >
             <boxGeometry />
             <meshStandardMaterial color={'blue'} />
