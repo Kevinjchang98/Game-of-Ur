@@ -4,10 +4,11 @@ import { OrbitControls } from '@react-three/drei';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
 import styles from './Game.module.css';
+import Piece from '../Piece/Piece';
 
 function Game() {
     // Keep track of current roll
-    const [roll, setRoll] = useState<number>(0);
+    const [roll, setRoll] = useState<number>(1);
     const [currPlayer, setCurrPlayer] = useState<number>(0);
 
     const rollDice = () => {
@@ -32,9 +33,10 @@ function Game() {
         <Suspense fallback={null}>
             <div className={styles.canvasContainer}>
                 <Canvas>
-                    <primitive object={board.scene} />
+                    <primitive object={board.scene} scale={5} />
                     <ambientLight />
                     <OrbitControls />
+                    <Piece roll={roll} />
                 </Canvas>
             </div>
 
