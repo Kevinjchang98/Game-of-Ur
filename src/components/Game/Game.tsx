@@ -37,6 +37,7 @@ function Game() {
                     <ambientLight />
                     <OrbitControls />
                     <Piece roll={roll} player={0} />
+                    <Piece roll={roll} player={1} />
                 </Canvas>
             </div>
 
