@@ -9,7 +9,12 @@ import Piece from '../Piece/Piece';
 function Game() {
     // Keep track of current roll
     const [roll, setRoll] = useState<number>(1);
+    // ID of current player
     const [currPlayer, setCurrPlayer] = useState<number>(0);
+    // x, z coord of last moved-to square
+    const [lastLanded, setLastLanded] = useState<Array<number>>([-1, -1]);
+    // ID of last-moved piece
+    const [lastMovedId, setLastMovedId] = useState<number>(-1);
 
     const rollDice = () => {
         // 4 dice and each with a 50/50 chance in 0 and 1, the probability will be:
@@ -36,8 +41,24 @@ function Game() {
                     <primitive object={board.scene} scale={5} />
                     <ambientLight />
                     <OrbitControls />
-                    <Piece roll={roll} player={0} />
-                    <Piece roll={roll} player={1} />
+                    <Piece
+                        roll={roll}
+                        player={0}
+                        id={0}
+                        lastLanded={lastLanded}
+                        setLastLanded={setLastLanded}
+                        lastMovedId={lastMovedId}
+                        setLastMovedId={setLastMovedId}
+                    />
+                    <Piece
+                        roll={roll}
+                        player={1}
+                        id={1}
+                        lastLanded={lastLanded}
+                        setLastLanded={setLastLanded}
+                        lastMovedId={lastMovedId}
+                        setLastMovedId={setLastMovedId}
+                    />
                 </Canvas>
             </div>
 

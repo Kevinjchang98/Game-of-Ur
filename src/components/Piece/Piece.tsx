@@ -1,24 +1,52 @@
 import { useSpring, animated } from '@react-spring/three';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface PieceProps {
     roll: number;
     player: number;
+    id: number;
+    lastLanded: Array<number>;
+    setLastLanded: Function;
+    lastMovedId: number;
+    setLastMovedId: Function;
 }
 
 const PIECE_HEIGHT = 0.5; // Height of pieces above board
 const PIECE_SCALE = 0.4;
 
-function Piece({ roll, player }: PieceProps) {
+function Piece({
+    roll,
+    player,
+    id,
+    lastLanded,
+    setLastLanded,
+    lastMovedId,
+    setLastMovedId,
+}: PieceProps) {
+    // [x, y, z] coord of position of piece
     const [position, setPosition] = useState<Array<number>>([
         player == 0 ? -1 : 1,
         PIECE_HEIGHT - 0.3,
         0.5,
     ]);
 
+    // Animate position to new position
     const { positionAnimated } = useSpring({
         positionAnimated: position,
     });
+
+    // Checks if this piece was just landed on and if it should reset to spawn
+    useEffect(() => {
+        if (
+            position[0] === lastLanded[0] &&
+            position[2] === lastLanded[1] &&
+            lastMovedId !== id
+        ) {
+            // TODO: Pick a place to keep all pieces that still need to be moved
+            setPosition([3, 1, 0]);
+            setLastMovedId(id);
+        }
+    }, [lastLanded]);
 
     // Moves piece
     const movePiece = () => {
@@ -48,6 +76,11 @@ function Piece({ roll, player }: PieceProps) {
                 } else z += roll;
             }
 
+            // Update last-moved information
+            setLastLanded([x, z]);
+            setLastMovedId(id);
+
+            // Update position
             return [x, y, z];
         });
     };
