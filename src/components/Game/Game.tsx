@@ -38,7 +38,11 @@ function Game() {
         <Suspense fallback={null}>
             <div className={styles.canvasContainer}>
                 <Canvas>
-                    <primitive object={board.scene} scale={5} />
+                    <primitive
+                        object={board.scene}
+                        scale={5}
+                        position={[-0.05, 0, 0]}
+                    />
                     <ambientLight />
                     <OrbitControls />
                     <Piece
