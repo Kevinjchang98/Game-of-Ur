@@ -47,7 +47,8 @@ function Piece({
             lastMovedPlayer !== player
         ) {
             // TODO: Pick a place to keep all pieces that still need to be moved
-            setPosition([3, 1, 0]);
+            // Set to the starting position
+            setPosition([player == 0 ? -1 : 1, PIECE_HEIGHT + id / 2, 0.5]);
             setLastMovedPlayer(id);
         }
     }, [lastLanded]);
@@ -113,6 +114,13 @@ function Piece({
 
                 return newOccupied;
             });
+
+            // Move finished pieces to a place by player
+            // TODO: Pass NUM_PIECES in from Game and line the finished pieces up horizontal?
+            if (x === (player == 0 ? -1 : 1) && z === 1.5) {
+                x = player == 0 ? -3 : 3;
+                z = -3.5;
+            }
 
             // Update position
             setPosition([x, PIECE_HEIGHT, z]);
