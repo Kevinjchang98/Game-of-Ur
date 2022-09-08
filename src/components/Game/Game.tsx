@@ -6,6 +6,8 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import styles from './Game.module.css';
 import Piece from '../Piece/Piece';
 
+const NUM_PIECES = 3;
+
 function Game() {
     // Keep track of current roll
     const [roll, setRoll] = useState<number>(1);
@@ -14,7 +16,9 @@ function Game() {
     // x, z coord of last moved-to square
     const [lastLanded, setLastLanded] = useState<Array<number>>([-1, -1]);
     // ID of last-moved piece
-    const [lastMovedId, setLastMovedId] = useState<number>(-1);
+    const [lastMovedPlayer, setLastMovedPlayer] = useState<number>(-1);
+    // Array of coords filled with pieces
+    const [occupied, setOccupied] = useState<any>([[], []]);
 
     const rollDice = () => {
         // 4 dice and each with a 50/50 chance in 0 and 1, the probability will be:
@@ -34,6 +38,26 @@ function Game() {
 
     const board = useLoader(GLTFLoader, '/board.gltf');
 
+    const pieces = Array(NUM_PIECES * 2)
+        .fill(null)
+        .map((e: any, i: number) => {
+            console.log(i);
+            return (
+                <Piece
+                    roll={roll}
+                    player={i < NUM_PIECES ? 0 : 1}
+                    id={i % NUM_PIECES}
+                    lastLanded={lastLanded}
+                    setLastLanded={setLastLanded}
+                    lastMovedPlayer={lastMovedPlayer}
+                    setLastMovedPlayer={setLastMovedPlayer}
+                    occupied={occupied}
+                    setOccupied={setOccupied}
+                    key={i}
+                />
+            );
+        });
+
     return (
         <Suspense fallback={null}>
             <div className={styles.canvasContainer}>
@@ -45,24 +69,7 @@ function Game() {
                     />
                     <ambientLight />
                     <OrbitControls />
-                    <Piece
-                        roll={roll}
-                        player={0}
-                        id={0}
-                        lastLanded={lastLanded}
-                        setLastLanded={setLastLanded}
-                        lastMovedId={lastMovedId}
-                        setLastMovedId={setLastMovedId}
-                    />
-                    <Piece
-                        roll={roll}
-                        player={1}
-                        id={1}
-                        lastLanded={lastLanded}
-                        setLastLanded={setLastLanded}
-                        lastMovedId={lastMovedId}
-                        setLastMovedId={setLastMovedId}
-                    />
+                    {pieces}
                 </Canvas>
             </div>
 
@@ -70,6 +77,8 @@ function Game() {
                 <p>Current roll: {roll}</p>
                 <p>Current player: {currPlayer}</p>
                 <button onClick={rollDice}>Roll</button>
+                {pieces}
+                {lastLanded}
             </div>
         </Suspense>
     );

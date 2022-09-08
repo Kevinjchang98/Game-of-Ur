@@ -7,8 +7,10 @@ interface PieceProps {
     id: number;
     lastLanded: Array<number>;
     setLastLanded: Function;
-    lastMovedId: number;
-    setLastMovedId: Function;
+    lastMovedPlayer: number;
+    setLastMovedPlayer: Function;
+    occupied: any;
+    setOccupied: Function;
 }
 
 const PIECE_HEIGHT = 0.5; // Height of pieces above board
@@ -20,13 +22,15 @@ function Piece({
     id,
     lastLanded,
     setLastLanded,
-    lastMovedId,
-    setLastMovedId,
+    lastMovedPlayer,
+    setLastMovedPlayer,
+    occupied,
+    setOccupied,
 }: PieceProps) {
     // [x, y, z] coord of position of piece
     const [position, setPosition] = useState<Array<number>>([
         player == 0 ? -1 : 1,
-        PIECE_HEIGHT - 0.3,
+        PIECE_HEIGHT + id / 2,
         0.5,
     ]);
 
@@ -40,49 +44,79 @@ function Piece({
         if (
             position[0] === lastLanded[0] &&
             position[2] === lastLanded[1] &&
-            lastMovedId !== id
+            lastMovedPlayer !== player
         ) {
             // TODO: Pick a place to keep all pieces that still need to be moved
             setPosition([3, 1, 0]);
-            setLastMovedId(id);
+            setLastMovedPlayer(id);
         }
     }, [lastLanded]);
 
     // Moves piece
     const movePiece = () => {
-        setPosition(([x, y, z]) => {
-            if (x != 0) {
-                // starting part of the board
-                if (z < 1) {
-                    if (z - roll < -3.5) {
-                        x = 0;
-                        z = -3.5 - (z - roll + 3.5) - 1;
-                    } else {
-                        z -= roll;
-                    }
+        let [x, y, z] = position;
+
+        if (x != 0) {
+            // starting part of the board
+            if (z < 1) {
+                if (z - roll < -3.5) {
+                    x = 0;
+                    z = -3.5 - (z - roll + 3.5) - 1;
+                } else {
+                    z -= roll;
                 }
-                // finishing part of the board
-                else {
-                    // must have an exact roll to finish
-                    if (z - roll >= 1.5) z -= roll;
+            }
+            // finishing part of the board
+            else {
+                // must have an exact roll to finish
+                if (z - roll >= 1.5) z -= roll;
+            }
+        } else {
+            if (z + roll > 3.5) {
+                // must have an exact roll to finish
+                if (3.5 - (z + roll - 3.5) + 1 >= 1.5) {
+                    x = player == 0 ? -1 : 1;
+                    z = 3.5 - (z + roll - 3.5) + 1;
                 }
-            } else {
-                if (z + roll > 3.5) {
-                    // must have an exact roll to finish
-                    if (3.5 - (z + roll - 3.5) + 1 >= 1.5) {
-                        x = player == 0 ? -1 : 1;
-                        z = 3.5 - (z + roll - 3.5) + 1;
-                    }
-                } else z += roll;
+            } else z += roll;
+        }
+
+        if (!occupied[player].includes([x, z].toString())) {
+            // If square we're moving to isn't occupied by friendly piece
+
+            if (occupied[player === 0 ? 1 : 0].includes([x, z].toString())) {
+                // TODO: If square we're moving to is occupied by enemy piece
             }
 
             // Update last-moved information
             setLastLanded([x, z]);
-            setLastMovedId(id);
+            setLastMovedPlayer(player);
+
+            // Update occupied information
+            setOccupied((prev: typeof occupied) => {
+                // Create copy of old state
+                let newOccupied = prev;
+
+                // Add new position if it doesn't exist
+                if (!newOccupied[player].includes([x, z].toString())) {
+                    newOccupied[player].push([x, z].toString());
+                }
+
+                // Remove old position
+                const old = newOccupied[player].indexOf(
+                    [position[0], position[2]].toString()
+                );
+
+                if (old > -1) {
+                    newOccupied[player].splice(old, 1);
+                }
+
+                return newOccupied;
+            });
 
             // Update position
-            return [x, y, z];
-        });
+            setPosition([x, PIECE_HEIGHT, z]);
+        }
     };
 
     return (
