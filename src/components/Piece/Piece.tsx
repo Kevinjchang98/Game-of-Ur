@@ -50,6 +50,12 @@ function Piece({
             // Set to the starting position
             setPosition([player == 0 ? -1 : 1, PIECE_HEIGHT + id / 2, 0.5]);
             setLastMovedPlayer(id);
+            setOccupied((prev: typeof occupied) => {
+                let newOccupied = prev;
+                removeOldPos(newOccupied);
+
+                return newOccupied;
+            });
         }
     }, [lastLanded]);
 
@@ -104,13 +110,7 @@ function Piece({
                 }
 
                 // Remove old position
-                const old = newOccupied[player].indexOf(
-                    [position[0], position[2]].toString()
-                );
-
-                if (old > -1) {
-                    newOccupied[player].splice(old, 1);
-                }
+                removeOldPos(newOccupied);
 
                 return newOccupied;
             });
@@ -124,6 +124,15 @@ function Piece({
 
             // Update position
             setPosition([x, PIECE_HEIGHT, z]);
+        }
+    };
+
+    // Removes current position from an array: typeof occupied
+    const removeOldPos = (arr: typeof occupied) => {
+        const old = arr[player].indexOf([position[0], position[2]].toString());
+
+        if (old > -1) {
+            arr[player].splice(old, 1);
         }
     };
 
