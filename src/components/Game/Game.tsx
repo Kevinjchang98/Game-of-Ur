@@ -41,7 +41,6 @@ function Game() {
     const pieces = Array(NUM_PIECES * 2)
         .fill(null)
         .map((e: any, i: number) => {
-            console.log(i);
             return (
                 <Piece
                     roll={roll}
