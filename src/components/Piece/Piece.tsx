@@ -27,12 +27,11 @@ function Piece({
     occupied,
     setOccupied,
 }: PieceProps) {
+    // Starting position of the pieces
+    const SPAWN = [player === 0 ? -1 : 1, PIECE_HEIGHT + id / 2, 0.5];
+
     // [x, y, z] coord of position of piece
-    const [position, setPosition] = useState<Array<number>>([
-        player === 0 ? -1 : 1,
-        PIECE_HEIGHT + id / 2,
-        0.5,
-    ]);
+    const [position, setPosition] = useState<Array<number>>(SPAWN);
 
     // Animate position to new position
     const { positionAnimated } = useSpring({
@@ -48,7 +47,7 @@ function Piece({
         ) {
             // TODO: Pick a place to keep all pieces that still need to be moved
             // Set to the starting position
-            setPosition([player == 0 ? -1 : 1, PIECE_HEIGHT + id / 2, 0.5]);
+            setPosition(SPAWN);
             setLastMovedPlayer(id);
             setOccupied((prev: typeof occupied) => {
                 let newOccupied = prev;
