@@ -29,7 +29,7 @@ function Piece({
 }: PieceProps) {
     // [x, y, z] coord of position of piece
     const [position, setPosition] = useState<Array<number>>([
-        player == 0 ? -1 : 1,
+        player === 0 ? -1 : 1,
         PIECE_HEIGHT + id / 2,
         0.5,
     ]);
@@ -82,7 +82,7 @@ function Piece({
             if (z + roll > 3.5) {
                 // must have an exact roll to finish
                 if (3.5 - (z + roll - 3.5) + 1 >= 1.5) {
-                    x = player == 0 ? -1 : 1;
+                    x = player === 0 ? -1 : 1;
                     z = 3.5 - (z + roll - 3.5) + 1;
                 }
             } else z += roll;
@@ -115,11 +115,10 @@ function Piece({
                 return newOccupied;
             });
 
-            // Move finished pieces to a place by player
-            // TODO: Pass NUM_PIECES in from Game and line the finished pieces up horizontal?
-            if (x === (player == 0 ? -1 : 1) && z === 1.5) {
-                x = player == 0 ? -3 : 3;
-                z = -3.5;
+            // Move finished pieces to the finished area by player
+            if (x === (player === 0 ? -1 : 1) && z === 1.5) {
+                x = player === 0 ? -3 - id + 1 : 3 + id - 1;
+                z = -4.5;
             }
 
             // Update position
@@ -143,7 +142,7 @@ function Piece({
             onClick={movePiece}
         >
             <boxGeometry />
-            <meshStandardMaterial color={player == 0 ? 'blue' : 'red'} />
+            <meshStandardMaterial color={player === 0 ? 'blue' : 'red'} />
         </animated.mesh>
     );
 }
