@@ -10,7 +10,7 @@ const NUM_PIECES = 3;
 
 function Game() {
     // Keep track of current roll
-    const [roll, setRoll] = useState<number>(1);
+    const [roll, setRoll] = useState<number>(100); // initial to 100 so must roll the dice to continue
     // ID of current player
     const [currPlayer, setCurrPlayer] = useState<number>(0);
     // x, z coord of last moved-to square
@@ -53,6 +53,7 @@ function Game() {
                     occupied={occupied}
                     setOccupied={setOccupied}
                     key={i}
+                    setRoll={setRoll}
                 />
             );
         });
@@ -75,6 +76,7 @@ function Game() {
             <div className={styles.menuContainer}>
                 <p>Current roll: {roll}</p>
                 <p>Current player: {currPlayer}</p>
+                <p>lastMovedPlayer: {lastMovedPlayer}</p>
                 <button onClick={rollDice}>Roll</button>
                 {pieces}
                 {lastLanded}
