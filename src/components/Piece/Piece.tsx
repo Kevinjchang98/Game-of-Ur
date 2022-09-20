@@ -11,7 +11,8 @@ interface PieceProps {
     setLastMovedPlayer: Function;
     occupied: any;
     setOccupied: Function;
-    setRoll: Function;
+    hasMoved: boolean;
+    setHasMoved: Function;
 }
 
 const PIECE_HEIGHT = 0.5; // Height of pieces above board
@@ -27,7 +28,8 @@ function Piece({
     setLastMovedPlayer,
     occupied,
     setOccupied,
-    setRoll,
+    hasMoved,
+    setHasMoved,
 }: PieceProps) {
     // Starting position of the pieces
     const SPAWN = [player === 0 ? -1 : 1, PIECE_HEIGHT + id / 2, 0.5];
@@ -63,12 +65,12 @@ function Piece({
     // Moves piece
     const movePiece = () => {
         // Only the current player can make the move
-        if (player !== lastMovedPlayer && roll <= 4) {
+        if (player !== lastMovedPlayer && !hasMoved) {
             if (roll === 0) {
                 // Update last-moved player
                 setLastMovedPlayer(player);
-                // Set roll to 100 so next player must roll the dice to continue
-                setRoll(100);
+                // Set hasMoved to true
+                setHasMoved(true);
             } else {
                 let [x, y, z] = position;
 
@@ -137,8 +139,8 @@ function Piece({
                     // Update position
                     setPosition([x, PIECE_HEIGHT, z]);
 
-                    // Set roll to 100 so next player must roll the dice to continue
-                    setRoll(100);
+                    // Set hasMoved to true
+                    setHasMoved(true);
                 }
             }
         }

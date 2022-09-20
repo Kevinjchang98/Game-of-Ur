@@ -10,7 +10,7 @@ const NUM_PIECES = 3;
 
 function Game() {
     // Keep track of current roll
-    const [roll, setRoll] = useState<number>(100); // initial to 100 so must roll the dice to continue
+    const [roll, setRoll] = useState<number>(0);
     // ID of current player
     const [currPlayer, setCurrPlayer] = useState<number>(0);
     // x, z coord of last moved-to square
@@ -19,6 +19,8 @@ function Game() {
     const [lastMovedPlayer, setLastMovedPlayer] = useState<number>(-1);
     // Array of coords filled with pieces
     const [occupied, setOccupied] = useState<any>([[], []]);
+    // Has made a move and a new roll must be generated
+    const [hasMoved, setHasMoved] = useState<boolean>(true);
 
     const rollDice = () => {
         // 4 dice and each with a 50/50 chance in 0 and 1, the probability will be:
@@ -34,6 +36,9 @@ function Game() {
 
         // Swap current player
         setCurrPlayer(currPlayer == 0 ? 1 : 0);
+
+        // Allow a new move to be made
+        setHasMoved(false);
     };
 
     const board = useLoader(GLTFLoader, '/board.gltf');
@@ -53,7 +58,8 @@ function Game() {
                     occupied={occupied}
                     setOccupied={setOccupied}
                     key={i}
-                    setRoll={setRoll}
+                    hasMoved={hasMoved}
+                    setHasMoved={setHasMoved}
                 />
             );
         });
@@ -76,10 +82,9 @@ function Game() {
             <div className={styles.menuContainer}>
                 <p>Current roll: {roll}</p>
                 <p>Current player: {currPlayer}</p>
-                <p>lastMovedPlayer: {lastMovedPlayer}</p>
-                <button onClick={rollDice}>Roll</button>
-                {pieces}
-                {lastLanded}
+                <button onClick={rollDice} disabled={!hasMoved && roll !== 0}>
+                    Roll
+                </button>
             </div>
         </Suspense>
     );
