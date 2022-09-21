@@ -42,7 +42,8 @@ function Piece({
     hasMoved,
     setHasMoved,
 }: PieceProps) {
-    const texture = useLoader(TextureLoader, 'piece_1.png');
+    // Geometry and texture of pieces
+    const { nodes, materials } = useGLTF('/piece.gltf') as GLTFResult;
 
     // Starting position of the pieces
     const SPAWN = [player === 0 ? -1 : 1, PIECE_HEIGHT + id / 2, 0.5];
@@ -167,9 +168,6 @@ function Piece({
             arr[player].splice(old, 1);
         }
     };
-
-    const { nodes, materials } = useGLTF('/piece.gltf') as GLTFResult;
-    console.log(materials);
 
     return (
         <>
