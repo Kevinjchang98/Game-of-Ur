@@ -1,5 +1,9 @@
 import { useSpring, animated } from '@react-spring/three';
+import { useLoader } from '@react-three/fiber';
 import { useEffect, useState } from 'react';
+import { TextureLoader } from 'three';
+import { useGLTF } from '@react-three/drei';
+import { GLTF } from 'three-stdlib';
 
 interface PieceProps {
     roll: number;
@@ -15,8 +19,15 @@ interface PieceProps {
     setHasMoved: Function;
 }
 
-const PIECE_HEIGHT = 0.5; // Height of pieces above board
-const PIECE_SCALE = 0.4;
+type GLTFResult = GLTF & {
+    nodes: {
+        Sphere: THREE.Mesh;
+    };
+    materials: any; // TODO: Reconsider any
+};
+
+const PIECE_HEIGHT = 0.4; // Height of pieces above board
+const PIECE_SCALE = 0.3;
 
 function Piece({
     roll,
@@ -31,6 +42,8 @@ function Piece({
     hasMoved,
     setHasMoved,
 }: PieceProps) {
+    const texture = useLoader(TextureLoader, 'piece_1.png');
+
     // Starting position of the pieces
     const SPAWN = [player === 0 ? -1 : 1, PIECE_HEIGHT + id / 2, 0.5];
 
@@ -155,15 +168,26 @@ function Piece({
         }
     };
 
+    const { nodes, materials } = useGLTF('/piece.gltf') as GLTFResult;
+    console.log(materials);
+
     return (
-        <animated.mesh
-            scale={PIECE_SCALE}
-            position={positionAnimated as any}
-            onClick={movePiece}
-        >
-            <boxGeometry />
-            <meshStandardMaterial color={player === 0 ? 'blue' : 'red'} />
-        </animated.mesh>
+        <>
+            <animated.mesh
+                castShadow
+                receiveShadow
+                scale={[
+                    PIECE_SCALE * 1,
+                    PIECE_SCALE * PIECE_HEIGHT,
+                    PIECE_SCALE * 1,
+                ]}
+                position={positionAnimated as any}
+                geometry={nodes.Sphere.geometry}
+                // TODO: Rename materials so we don't have to player + 1
+                material={materials[`Material.00${player + 1}`]}
+                onClick={movePiece}
+            ></animated.mesh>
+        </>
     );
 }
 
