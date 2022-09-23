@@ -8,6 +8,7 @@ import { GLTF } from 'three-stdlib';
 interface PieceProps {
     roll: number;
     player: number;
+    setPlayer: Function;
     id: number;
     lastLanded: Array<number>;
     setLastLanded: Function;
@@ -17,6 +18,7 @@ interface PieceProps {
     setOccupied: Function;
     hasMoved: boolean;
     setHasMoved: Function;
+    reroll: Function;
 }
 
 type GLTFResult = GLTF & {
@@ -28,10 +30,12 @@ type GLTFResult = GLTF & {
 
 const PIECE_HEIGHT = 0.4; // Height of pieces above board
 const PIECE_SCALE = 0.3;
+const ROSETTE = ['-1,-3.5', '-1,2.5', '0,-0.5', '1,-3.5', '1,2.5'];
 
 function Piece({
     roll,
     player,
+    setPlayer,
     id,
     lastLanded,
     setLastLanded,
@@ -41,6 +45,7 @@ function Piece({
     setOccupied,
     hasMoved,
     setHasMoved,
+    reroll,
 }: PieceProps) {
     // Geometry and texture of pieces
     const { nodes, materials } = useGLTF('/piece.gltf') as GLTFResult;
@@ -155,6 +160,17 @@ function Piece({
 
                     // Set hasMoved to true
                     setHasMoved(true);
+
+                    // Check for rosette square
+                    if (ROSETTE.includes([x, z].toString())) {
+                        // reroll();
+                        setPlayer(player == 0 ? 1 : 0);
+                        // setPlayer(player);
+                        setLastMovedPlayer(player == 0 ? 1 : 0);
+                        console.log('reroll');
+                        console.log('lastmoved' + lastMovedPlayer);
+                        console.log('currPlayer' + player);
+                    }
                 }
             }
         }

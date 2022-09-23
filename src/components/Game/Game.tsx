@@ -41,6 +41,11 @@ function Game() {
         setHasMoved(false);
     };
 
+    const reroll = () => {
+        setCurrPlayer(currPlayer == 0 ? 1 : 0);
+        setLastMovedPlayer(lastMovedPlayer == 0 ? 1 : 0);
+    };
+
     const board = useLoader(GLTFLoader, '/board.gltf');
 
     const pieces = Array(NUM_PIECES * 2)
@@ -50,6 +55,7 @@ function Game() {
                 <Piece
                     roll={roll}
                     player={i < NUM_PIECES ? 0 : 1}
+                    setPlayer={setCurrPlayer}
                     id={i % NUM_PIECES}
                     lastLanded={lastLanded}
                     setLastLanded={setLastLanded}
@@ -60,6 +66,7 @@ function Game() {
                     key={i}
                     hasMoved={hasMoved}
                     setHasMoved={setHasMoved}
+                    reroll={reroll}
                 />
             );
         });
