@@ -55,7 +55,7 @@ function Game() {
                 <Piece
                     roll={roll}
                     player={i < NUM_PIECES ? 0 : 1}
-                    setPlayer={setCurrPlayer}
+                    setCurrPlayer={setCurrPlayer}
                     id={i % NUM_PIECES}
                     lastLanded={lastLanded}
                     setLastLanded={setLastLanded}

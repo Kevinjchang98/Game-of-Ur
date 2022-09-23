@@ -8,7 +8,7 @@ import { GLTF } from 'three-stdlib';
 interface PieceProps {
     roll: number;
     player: number;
-    setPlayer: Function;
+    setCurrPlayer: Function;
     id: number;
     lastLanded: Array<number>;
     setLastLanded: Function;
@@ -35,7 +35,7 @@ const ROSETTE = ['-1,-3.5', '-1,2.5', '0,-0.5', '1,-3.5', '1,2.5'];
 function Piece({
     roll,
     player,
-    setPlayer,
+    setCurrPlayer,
     id,
     lastLanded,
     setLastLanded,
@@ -61,12 +61,16 @@ function Piece({
         positionAnimated: position,
     });
 
+    // If a reroll is allowed by landing on a rosette
+    const [isReroll, setIsReroll] = useState<boolean>(false);
+
     // Checks if this piece was just landed on and if it should reset to spawn
     useEffect(() => {
         if (
             position[0] === lastLanded[0] &&
             position[2] === lastLanded[1] &&
-            lastMovedPlayer !== player
+            lastMovedPlayer !== player &&
+            !isReroll
         ) {
             // TODO: Pick a place to keep all pieces that still need to be moved
             // Set to the starting position
@@ -163,13 +167,11 @@ function Piece({
 
                     // Check for rosette square
                     if (ROSETTE.includes([x, z].toString())) {
-                        // reroll();
-                        setPlayer(player == 0 ? 1 : 0);
-                        // setPlayer(player);
+                        console.log('rosette');
+                        setIsReroll(true);
+                        setCurrPlayer(player == 0 ? 1 : 0);
                         setLastMovedPlayer(player == 0 ? 1 : 0);
-                        console.log('reroll');
-                        console.log('lastmoved' + lastMovedPlayer);
-                        console.log('currPlayer' + player);
+                        setHasMoved(false);
                     }
                 }
             }
