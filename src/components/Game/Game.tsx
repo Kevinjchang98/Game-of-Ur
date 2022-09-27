@@ -21,6 +21,8 @@ function Game() {
     const [occupied, setOccupied] = useState<any>([[], []]);
     // Has made a move and a new roll must be generated
     const [hasMoved, setHasMoved] = useState<boolean>(true);
+    // If a reroll is allowed by landing on a rosette
+    const [isReroll, setIsReroll] = useState<boolean>(false);
 
     const rollDice = () => {
         // 4 dice and each with a 50/50 chance in 0 and 1, the probability will be:
@@ -67,6 +69,8 @@ function Game() {
                     hasMoved={hasMoved}
                     setHasMoved={setHasMoved}
                     reroll={reroll}
+                    isReroll={isReroll}
+                    setIsReroll={setIsReroll}
                 />
             );
         });
@@ -89,7 +93,10 @@ function Game() {
             <div className={styles.menuContainer}>
                 <p>Current roll: {roll}</p>
                 <p>Current player: {currPlayer}</p>
-                <button onClick={rollDice} disabled={!hasMoved && roll !== 0}>
+                <button
+                    onClick={rollDice}
+                    disabled={!hasMoved && roll !== 0 && !isReroll}
+                >
                     Roll
                 </button>
             </div>

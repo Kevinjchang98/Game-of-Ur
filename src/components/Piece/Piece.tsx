@@ -19,6 +19,8 @@ interface PieceProps {
     hasMoved: boolean;
     setHasMoved: Function;
     reroll: Function;
+    isReroll: boolean;
+    setIsReroll: Function;
 }
 
 type GLTFResult = GLTF & {
@@ -46,6 +48,8 @@ function Piece({
     hasMoved,
     setHasMoved,
     reroll,
+    isReroll,
+    setIsReroll,
 }: PieceProps) {
     // Geometry and texture of pieces
     const { nodes, materials } = useGLTF('/piece.gltf') as GLTFResult;
@@ -60,9 +64,6 @@ function Piece({
     const { positionAnimated } = useSpring({
         positionAnimated: position,
     });
-
-    // If a reroll is allowed by landing on a rosette
-    const [isReroll, setIsReroll] = useState<boolean>(false);
 
     // Checks if this piece was just landed on and if it should reset to spawn
     useEffect(() => {
