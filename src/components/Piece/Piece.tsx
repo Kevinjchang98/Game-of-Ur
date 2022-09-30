@@ -1,7 +1,5 @@
 import { useSpring, animated } from '@react-spring/three';
-import { useLoader } from '@react-three/fiber';
 import { useEffect, useState } from 'react';
-import { TextureLoader } from 'three';
 import { useGLTF } from '@react-three/drei';
 import { GLTF } from 'three-stdlib';
 
