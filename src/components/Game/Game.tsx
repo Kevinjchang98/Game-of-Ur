@@ -2,11 +2,13 @@ import { Suspense, useState } from 'react';
 import { Canvas, useLoader } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import { useSpring } from '@react-spring/three';
+import produce from 'immer';
 
 import styles from './Game.module.css';
 import Piece from '../Piece/Piece';
 
-const NUM_PIECES = 3;
+const NUM_PIECES = 1;
 
 function Game() {
     // Keep track of current roll
@@ -23,6 +25,19 @@ function Game() {
     const [hasMoved, setHasMoved] = useState<boolean>(true);
     // If a reroll is allowed by landing on a rosette
     const [isReroll, setIsReroll] = useState<boolean>(false);
+    // Positions array
+    const [positions, setPositions] = useState<any>([
+        {
+            pos: [0, 0, 0],
+        },
+        {
+            pos: [2, 0, 0],
+        },
+    ]);
+    const [posAnimated, setPosAnimated] = useState<any>([
+        { posAnimated: useSpring({ posAnimated: positions[0].pos }) },
+        { posAnimated: useSpring({ posAnimated: positions[1].pos }) },
+    ]);
 
     const rollDice = () => {
         // 4 dice and each with a 50/50 chance in 0 and 1, the probability will be:
@@ -55,6 +70,8 @@ function Game() {
         .map((e: any, i: number) => {
             return (
                 <Piece
+                    positions={positions}
+                    posAnimated={posAnimated}
                     roll={roll}
                     player={i < NUM_PIECES ? 0 : 1}
                     setCurrPlayer={setCurrPlayer}
@@ -79,11 +96,11 @@ function Game() {
         <Suspense fallback={null}>
             <div className={styles.canvasContainer}>
                 <Canvas>
-                    <primitive
+                    {/* <primitive
                         object={board.scene}
                         scale={5}
                         position={[-0.05, 0, 0]}
-                    />
+                    /> */}
                     <ambientLight />
                     <OrbitControls />
                     {pieces}
@@ -99,6 +116,18 @@ function Game() {
                 >
                     Roll
                 </button>
+                <button
+                    onClick={() => {
+                        setPositions(
+                            produce((draft: any) => {
+                                draft[0].pos = [draft[0].pos[0] + 1, 0, 0];
+                            })
+                        );
+                    }}
+                >
+                    Move
+                </button>
+                {positions[0].pos}
             </div>
         </Suspense>
     );

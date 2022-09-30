@@ -4,6 +4,8 @@ import { useGLTF } from '@react-three/drei';
 import { GLTF } from 'three-stdlib';
 
 interface PieceProps {
+    positions: any;
+    posAnimated: any;
     roll: number;
     player: number;
     setCurrPlayer: Function;
@@ -33,6 +35,8 @@ const PIECE_SCALE = 0.3;
 const ROSETTE = ['-1,-3.5', '-1,2.5', '0,-0.5', '1,-3.5', '1,2.5'];
 
 function Piece({
+    positions,
+    posAnimated,
     roll,
     player,
     setCurrPlayer,
@@ -60,7 +64,7 @@ function Piece({
 
     // Animate position to new position
     const { positionAnimated } = useSpring({
-        positionAnimated: position,
+        positionAnimated: positions[id + player].pos,
     });
 
     // Checks if this piece was just landed on and if it should reset to spawn
@@ -185,6 +189,8 @@ function Piece({
             arr[player].splice(old, 1);
         }
     };
+
+    console.log(id + player + '' + positions[id]);
 
     return (
         <>
