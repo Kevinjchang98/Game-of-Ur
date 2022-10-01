@@ -80,7 +80,8 @@ function Game() {
             // Check if next position has an enemy piece on it
             checkIfCapture(nextPos);
 
-            // TODO: Check if next position is a rosette
+            // Check if next position is a rosette
+            checkIfRosette(nextPos);
 
             // Set new position
             setPositions(
@@ -92,7 +93,28 @@ function Game() {
     };
 
     /**
-     * Checks if the position we're about to move to has an enemy piece which we need to move back to spawn.
+     * Check if the position we're about to move to is a rosette which would
+     * allow the current player to roll and move again
+     *
+     * @param pos Position of the piece we're about to move in form [x, y, z]
+     */
+    const checkIfRosette = (pos: Array<number>) => {
+        // Coordinates of rosettes
+        const rosettePos = ['-1,-3.5', '-1,2.5', '0,-0.5', '1,-3.5', '1,2.5'];
+
+        // Get x and z coord from pos
+        let [x, z] = [pos[0], pos[2]];
+
+        // Check
+        if (rosettePos.includes([x, z].toString())) {
+            console.log('rosette');
+            // TODO: Finish
+        }
+    };
+
+    /**
+     * Checks if the position we're about to move to has an enemy piece which we
+     * need to move back to spawn.
      *
      * @param pos Position of the piece we're about to move in form [x, y, z]
      */
