@@ -34,10 +34,6 @@ function Game() {
             pos: [2, 0, 0],
         },
     ]);
-    const [posAnimated, setPosAnimated] = useState<any>([
-        { posAnimated: useSpring({ posAnimated: positions[0].pos }) },
-        { posAnimated: useSpring({ posAnimated: positions[1].pos }) },
-    ]);
 
     const rollDice = () => {
         // 4 dice and each with a 50/50 chance in 0 and 1, the probability will be:
@@ -71,7 +67,7 @@ function Game() {
             return (
                 <Piece
                     positions={positions}
-                    posAnimated={posAnimated}
+                    setPositions={setPositions}
                     roll={roll}
                     player={i < NUM_PIECES ? 0 : 1}
                     setCurrPlayer={setCurrPlayer}
@@ -116,18 +112,6 @@ function Game() {
                 >
                     Roll
                 </button>
-                <button
-                    onClick={() => {
-                        setPositions(
-                            produce((draft: any) => {
-                                draft[0].pos = [draft[0].pos[0] + 1, 0, 0];
-                            })
-                        );
-                    }}
-                >
-                    Move
-                </button>
-                {positions[0].pos}
             </div>
         </Suspense>
     );

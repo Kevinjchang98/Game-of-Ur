@@ -2,10 +2,11 @@ import { useSpring, animated } from '@react-spring/three';
 import { useEffect, useState } from 'react';
 import { useGLTF } from '@react-three/drei';
 import { GLTF } from 'three-stdlib';
+import produce from 'immer';
 
 interface PieceProps {
     positions: any;
-    posAnimated: any;
+    setPositions: Function;
     roll: number;
     player: number;
     setCurrPlayer: Function;
@@ -36,7 +37,7 @@ const ROSETTE = ['-1,-3.5', '-1,2.5', '0,-0.5', '1,-3.5', '1,2.5'];
 
 function Piece({
     positions,
-    posAnimated,
+    setPositions,
     roll,
     player,
     setCurrPlayer,
@@ -90,6 +91,13 @@ function Piece({
 
     // Moves piece
     const movePiece = () => {
+        // Increment position
+        setPositions(
+            produce((draft: any) => {
+                draft[id + player].pos = [draft[id + player].pos[0] + 1, 0, 0];
+            })
+        );
+
         // Only the current player can make the move
         if (player !== lastMovedPlayer && !hasMoved) {
             if (roll === 0) {
