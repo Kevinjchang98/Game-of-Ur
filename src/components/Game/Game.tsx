@@ -188,8 +188,9 @@ function Game() {
                 setPositions(
                     produce((draft: any) => {
                         draft[i].pos = [
-                            i == 0 ? -1 : 1,
-                            PIECE_HEIGHT + (currPlayer === 0 ? 1 : 0) / 2,
+                            currPlayer == 1 ? -1 : 1,
+                            PIECE_HEIGHT +
+                                (currPlayer === 1 ? i : i - NUM_PIECES) / 2,
                             0.5,
                         ];
                     })
