@@ -43,7 +43,6 @@ function Game() {
                 }
             }
 
-            console.log(newPosArr);
             return newPosArr;
         });
     }, []);
@@ -78,7 +77,8 @@ function Game() {
             // Get next position from helper function based off current position
             let nextPos = getNextPos(positions[id].pos);
 
-            // TODO: Check if next position has an enemy piece on it
+            // Check if next position has an enemy piece on it
+            checkIfCapture(nextPos);
 
             // TODO: Check if next position is a rosette
 
@@ -88,6 +88,43 @@ function Game() {
                     draft[id].pos = nextPos;
                 })
             );
+        }
+    };
+
+    /**
+     * Checks if the position we're about to move to has an enemy piece which we need to move back to spawn.
+     *
+     * @param pos Position of the piece we're about to move in form [x, y, z]
+     */
+    const checkIfCapture = (pos: Array<number>) => {
+        // Determine which indexes of positions we need to check
+        let left, right;
+
+        // Get indexes of enemy pieces
+        if (currPlayer === 1) {
+            left = 0;
+            right = NUM_PIECES - 1;
+        } else {
+            left = NUM_PIECES;
+            right = NUM_PIECES * 2 - 1;
+        }
+
+        // Check if an enemy piece exists in the pos we're about to move to
+        for (let i = left; i <= right; i++) {
+            if (positions[i].pos.toString() === pos.toString()) {
+                console.log('is a capture for piece' + i);
+
+                // Set piece-being-captured's position to spawn
+                setPositions(
+                    produce((draft: any) => {
+                        draft[i].pos = [
+                            i == 0 ? -1 : 1,
+                            PIECE_HEIGHT + (currPlayer === 0 ? 1 : 0) / 2,
+                            0.5,
+                        ];
+                    })
+                );
+            }
         }
     };
 
@@ -201,6 +238,7 @@ function Game() {
                 >
                     Roll
                 </button>
+                {currPlayer}
             </div>
         </Suspense>
     );
