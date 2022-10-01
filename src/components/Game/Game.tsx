@@ -12,8 +12,6 @@ function Game() {
     const NUM_PIECES = 3;
     // How high off the board the pieces are
     const PIECE_HEIGHT = 0.4;
-    // Board width for moving pieces
-    const BOARD_WIDTH = 3.5;
 
     // Keep track of current roll
     const [roll, setRoll] = useState<number>(0);
@@ -105,9 +103,9 @@ function Game() {
         if (x !== 0) {
             // starting part of the board
             if (z < 1) {
-                if (z - roll < -BOARD_WIDTH) {
+                if (z - roll < -3.5) {
                     x = 0;
-                    z = -BOARD_WIDTH - (z - roll + BOARD_WIDTH) - 1;
+                    z = -3.5 - (z - roll + 3.5) - 1;
                 } else {
                     z -= roll;
                 }
@@ -118,11 +116,11 @@ function Game() {
                 if (z - roll >= 1.5) z -= roll;
             }
         } else {
-            if (z + roll > BOARD_WIDTH) {
+            if (z + roll > 3.5) {
                 // must have an exact roll to finish
-                if (BOARD_WIDTH - (z + roll - BOARD_WIDTH) + 1 >= 1.5) {
+                if (3.5 - (z + roll - 3.5) + 1 >= 1.5) {
                     x = currPlayer === 0 ? -1 : 1;
-                    z = BOARD_WIDTH - (z + roll - BOARD_WIDTH) + 1;
+                    z = 3.5 - (z + roll - 3.5) + 1;
                 }
             } else z += roll;
         }
