@@ -50,10 +50,10 @@ function Game() {
         setRoll(() => {
             let num = Math.random();
             if (num < 0.0625) return 0;
-            else if (num < 0.0625 + 0.25) return 1;
-            else if (num < 0.0625 + 0.25 + 0.375) return 2;
-            else if (num < 0.0625 + 0.25 + 0.375 + 0.25) return 3;
-            else return 4;
+            if (num < 0.0625 + 0.25) return 1;
+            if (num < 0.0625 + 0.25 + 0.375) return 2;
+            if (num < 0.0625 + 0.25 + 0.375 + 0.25) return 3;
+            return 4;
         });
 
         // Swap current player
@@ -188,9 +188,9 @@ function Game() {
                 setPositions(
                     produce((draft: any) => {
                         draft[i].pos = [
-                            currPlayer == 1 ? -1 : 1,
+                            i < NUM_PIECES ? -1 : 1,
                             PIECE_HEIGHT +
-                                (currPlayer === 1 ? i : i - NUM_PIECES) / 2,
+                                (i < NUM_PIECES ? i : i - NUM_PIECES) / 2,
                             0.5,
                         ];
                     })
