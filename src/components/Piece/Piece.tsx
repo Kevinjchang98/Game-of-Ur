@@ -21,6 +21,7 @@ interface PieceProps {
     setHasMoved: Function;
     isReroll: boolean;
     setIsReroll: Function;
+    NUM_PIECES: number;
 }
 
 type GLTFResult = GLTF & {
@@ -51,6 +52,7 @@ function Piece({
     setHasMoved,
     isReroll,
     setIsReroll,
+    NUM_PIECES,
 }: PieceProps) {
     // Geometry and texture of pieces
     const { nodes, materials } = useGLTF('/piece.gltf') as GLTFResult;
@@ -63,7 +65,7 @@ function Piece({
 
     // Animate position to new position
     const { positionAnimated } = useSpring({
-        positionAnimated: positions[id + player].pos,
+        positionAnimated: positions[id + player * NUM_PIECES].pos,
     });
 
     // Checks if this piece was just landed on and if it should reset to spawn
@@ -89,17 +91,6 @@ function Piece({
 
     // Moves piece
     const movePiece = () => {
-        // Increment position
-        setPositions(
-            produce((draft: any) => {
-                draft[id + player].pos = [
-                    draft[id + player].pos[0] + 1,
-                    0.4,
-                    0,
-                ];
-            })
-        );
-
         // Only the current player can make the move
         if (player !== lastMovedPlayer && !hasMoved) {
             if (roll === 0) {
@@ -173,7 +164,17 @@ function Piece({
                     }
 
                     // Update position
-                    setPosition([x, PIECE_HEIGHT, z]);
+                    // setPosition([x, PIECE_HEIGHT, z]);
+
+                    setPositions(
+                        produce((draft: any) => {
+                            draft[id + player * NUM_PIECES].pos = [
+                                x,
+                                PIECE_HEIGHT,
+                                z,
+                            ];
+                        })
+                    );
 
                     // Set hasMoved to true
                     setHasMoved(true);

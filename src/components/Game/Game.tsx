@@ -1,4 +1,4 @@
-import { Suspense, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { Canvas, useLoader } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
@@ -6,9 +6,11 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import styles from './Game.module.css';
 import Piece from '../Piece/Piece';
 
-const NUM_PIECES = 1;
-
 function Game() {
+    // Number of pieces per player
+    const NUM_PIECES = 3;
+    // How high off the board the pieces are
+    const PIECE_HEIGHT = 0.4;
     // Keep track of current roll
     const [roll, setRoll] = useState<number>(0);
     // ID of current player
@@ -24,14 +26,25 @@ function Game() {
     // If a reroll is allowed by landing on a rosette
     const [isReroll, setIsReroll] = useState<boolean>(false);
     // Positions array
-    const [positions, setPositions] = useState<any>([
-        {
-            pos: [0, 0.4, 0],
-        },
-        {
-            pos: [2, 0.4, 0],
-        },
-    ]);
+    const [positions, setPositions] = useState<any>([]);
+
+    // Initialize positions for the first time
+    useEffect(() => {
+        setPositions(() => {
+            let newPosArr = [];
+
+            for (let i = 0; i < 2; i++) {
+                for (let j = 0; j < NUM_PIECES; j++) {
+                    newPosArr.push({
+                        pos: [i == 0 ? -1 : 1, PIECE_HEIGHT + j / 2, 0.5],
+                    });
+                }
+            }
+
+            console.log(newPosArr);
+            return newPosArr;
+        });
+    }, []);
 
     const rollDice = () => {
         // 4 dice and each with a 50/50 chance in 0 and 1, the probability will be:
@@ -79,9 +92,9 @@ function Game() {
                     key={i}
                     hasMoved={hasMoved}
                     setHasMoved={setHasMoved}
-                    reroll={reroll}
                     isReroll={isReroll}
                     setIsReroll={setIsReroll}
+                    NUM_PIECES={NUM_PIECES}
                 />
             );
         });
