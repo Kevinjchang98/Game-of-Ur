@@ -2,8 +2,6 @@ import { Suspense, useState } from 'react';
 import { Canvas, useLoader } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-import { useSpring } from '@react-spring/three';
-import produce from 'immer';
 
 import styles from './Game.module.css';
 import Piece from '../Piece/Piece';
@@ -28,10 +26,10 @@ function Game() {
     // Positions array
     const [positions, setPositions] = useState<any>([
         {
-            pos: [0, 0, 0],
+            pos: [0, 0.4, 0],
         },
         {
-            pos: [2, 0, 0],
+            pos: [2, 0.4, 0],
         },
     ]);
 
@@ -92,11 +90,11 @@ function Game() {
         <Suspense fallback={null}>
             <div className={styles.canvasContainer}>
                 <Canvas>
-                    {/* <primitive
+                    <primitive
                         object={board.scene}
                         scale={5}
                         position={[-0.05, 0, 0]}
-                    /> */}
+                    />
                     <ambientLight />
                     <OrbitControls />
                     {pieces}

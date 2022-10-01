@@ -19,7 +19,6 @@ interface PieceProps {
     setOccupied: Function;
     hasMoved: boolean;
     setHasMoved: Function;
-    reroll: Function;
     isReroll: boolean;
     setIsReroll: Function;
 }
@@ -50,7 +49,6 @@ function Piece({
     setOccupied,
     hasMoved,
     setHasMoved,
-    reroll,
     isReroll,
     setIsReroll,
 }: PieceProps) {
@@ -94,7 +92,11 @@ function Piece({
         // Increment position
         setPositions(
             produce((draft: any) => {
-                draft[id + player].pos = [draft[id + player].pos[0] + 1, 0, 0];
+                draft[id + player].pos = [
+                    draft[id + player].pos[0] + 1,
+                    0.4,
+                    0,
+                ];
             })
         );
 
@@ -197,8 +199,6 @@ function Piece({
             arr[player].splice(old, 1);
         }
     };
-
-    console.log(id + player + '' + positions[id]);
 
     return (
         <>
