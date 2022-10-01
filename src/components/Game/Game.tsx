@@ -73,6 +73,7 @@ function Game() {
         if (checkIfPlayerTurn(id) && !hasMoved) {
             // Get next position from helper function based off current position
             let [x, y, z] = getNextPos(positions[id].pos);
+
             y = PIECE_HEIGHT;
 
             // Check if next position has an enemy piece on it
@@ -285,7 +286,6 @@ function Game() {
                 <button onClick={rollDice} disabled={!hasMoved}>
                     Roll
                 </button>
-                {currPlayer}
             </div>
         </Suspense>
     );
