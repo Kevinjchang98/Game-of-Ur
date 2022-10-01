@@ -23,9 +23,6 @@ function Piece({ positions, player, id, movePiece }: PieceProps) {
     // Geometry and texture of pieces
     const { nodes, materials } = useGLTF('/piece.gltf') as GLTFResult;
 
-    // Starting position of the pieces
-    const SPAWN = [player === 0 ? -1 : 1, PIECE_HEIGHT + id / 2, 0.5];
-
     // Animate position to new position
     const { positionAnimated } = useSpring({
         positionAnimated: positions[id].pos,
