@@ -102,14 +102,14 @@ function Game() {
     return (
         <Suspense fallback={null}>
             <div className={styles.canvasContainer}>
-                <Canvas>
+                <Canvas camera={{ position: [0, 10, 0] }}>
                     <primitive
                         object={board.scene}
                         scale={5}
                         position={[-0.05, 0, 0]}
                     />
                     <ambientLight />
-                    <OrbitControls />
+                    <OrbitControls target={[0, 0, 0]} />
                     {pieces}
                 </Canvas>
             </div>
