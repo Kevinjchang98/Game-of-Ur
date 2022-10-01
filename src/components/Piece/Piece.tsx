@@ -1,8 +1,6 @@
 import { useSpring, animated } from '@react-spring/three';
-import { useEffect, useState } from 'react';
 import { useGLTF } from '@react-three/drei';
 import { GLTF } from 'three-stdlib';
-import produce from 'immer';
 
 interface PieceProps {
     positions: any;
@@ -11,16 +9,16 @@ interface PieceProps {
     player: number;
     setCurrPlayer: Function;
     id: number;
-    lastLanded: Array<number>;
-    setLastLanded: Function;
-    lastMovedPlayer: number;
-    setLastMovedPlayer: Function;
-    occupied: any;
-    setOccupied: Function;
+    // lastLanded: Array<number>;
+    // setLastLanded: Function;
+    // lastMovedPlayer: number;
+    // setLastMovedPlayer: Function;
+    // occupied: any;
+    // setOccupied: Function;
     hasMoved: boolean;
     setHasMoved: Function;
-    isReroll: boolean;
-    setIsReroll: Function;
+    // isReroll: boolean;
+    // setIsReroll: Function;
     NUM_PIECES: number;
     movePiece: Function;
 }
@@ -41,19 +39,19 @@ function Piece({
     setPositions,
     roll,
     player,
-    setCurrPlayer,
+    // setCurrPlayer,
     id,
-    lastLanded,
-    setLastLanded,
-    lastMovedPlayer,
-    setLastMovedPlayer,
-    occupied,
-    setOccupied,
-    hasMoved,
-    setHasMoved,
-    isReroll,
-    setIsReroll,
-    NUM_PIECES,
+    // lastLanded,
+    // setLastLanded,
+    // lastMovedPlayer,
+    // setLastMovedPlayer,
+    // occupied,
+    // setOccupied,
+    // hasMoved,
+    // setHasMoved,
+    // isReroll,
+    // setIsReroll,
+    // NUM_PIECES,
     movePiece,
 }: PieceProps) {
     // Geometry and texture of pieces
@@ -71,29 +69,29 @@ function Piece({
     });
 
     // Checks if this piece was just landed on and if it should reset to spawn
-    useEffect(() => {
-        if (
-            positions[id][0] === lastLanded[0] &&
-            positions[id][2] === lastLanded[1] &&
-            lastMovedPlayer !== player &&
-            !isReroll
-        ) {
-            // TODO: Pick a place to keep all pieces that still need to be moved
-            // Set to the starting position
-            setPositions(
-                produce((draft: any) => {
-                    draft[id].pos = SPAWN;
-                })
-            );
-            setLastMovedPlayer(id);
-            setOccupied((prev: typeof occupied) => {
-                let newOccupied = prev;
-                removeOldPos(newOccupied);
+    // useEffect(() => {
+    //     if (
+    //         positions[id][0] === lastLanded[0] &&
+    //         positions[id][2] === lastLanded[1] &&
+    //         lastMovedPlayer !== player &&
+    //         !isReroll
+    //     ) {
+    //         // TODO: Pick a place to keep all pieces that still need to be moved
+    //         // Set to the starting position
+    //         setPositions(
+    //             produce((draft: any) => {
+    //                 draft[id].pos = SPAWN;
+    //             })
+    //         );
+    //         setLastMovedPlayer(id);
+    //         setOccupied((prev: typeof occupied) => {
+    //             let newOccupied = prev;
+    //             removeOldPos(newOccupied);
 
-                return newOccupied;
-            });
-        }
-    }, [lastLanded]);
+    //             return newOccupied;
+    //         });
+    //     }
+    // }, [lastLanded]);
 
     // Moves piece
     // const movePiece = () => {
@@ -199,15 +197,15 @@ function Piece({
     // };
 
     // Removes current position from an array: typeof occupied
-    const removeOldPos = (arr: typeof occupied) => {
-        const old = arr[player].indexOf(
-            [positions[id][0], positions[id][2]].toString()
-        );
+    // const removeOldPos = (arr: typeof occupied) => {
+    //     const old = arr[player].indexOf(
+    //         [positions[id][0], positions[id][2]].toString()
+    //     );
 
-        if (old > -1) {
-            arr[player].splice(old, 1);
-        }
-    };
+    //     if (old > -1) {
+    //         arr[player].splice(old, 1);
+    //     }
+    // };
 
     return (
         <>

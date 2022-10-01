@@ -17,16 +17,16 @@ function Game() {
     const [roll, setRoll] = useState<number>(0);
     // ID of current player
     const [currPlayer, setCurrPlayer] = useState<number>(0);
-    // x, z coord of last moved-to square
-    const [lastLanded, setLastLanded] = useState<Array<number>>([-1, -1]);
-    // ID of last-moved piece
-    const [lastMovedPlayer, setLastMovedPlayer] = useState<number>(-1);
-    // Array of coords filled with pieces
-    const [occupied, setOccupied] = useState<any>([[], []]);
+    // // x, z coord of last moved-to square
+    // const [lastLanded, setLastLanded] = useState<Array<number>>([-1, -1]);
+    // // ID of last-moved piece
+    // const [lastMovedPlayer, setLastMovedPlayer] = useState<number>(-1);
+    // // Array of coords filled with pieces
+    // const [occupied, setOccupied] = useState<any>([[], []]);
     // Has made a move and a new roll must be generated
     const [hasMoved, setHasMoved] = useState<boolean>(true);
-    // If a reroll is allowed by landing on a rosette
-    const [isReroll, setIsReroll] = useState<boolean>(false);
+    // // If a reroll is allowed by landing on a rosette
+    // const [isReroll, setIsReroll] = useState<boolean>(false);
     // Positions array
     const [positions, setPositions] = useState<any>([]);
 
@@ -60,7 +60,7 @@ function Game() {
         });
 
         // Swap current player
-        setCurrPlayer(currPlayer == 0 ? 1 : 0);
+        // setCurrPlayer(currPlayer == 0 ? 1 : 0);
 
         // Allow a new move to be made
         setHasMoved(false);
@@ -75,21 +75,57 @@ function Game() {
         // Checks if it's the correct player's piece moving
         if (checkIfPlayerTurn(id)) {
             // Get next position from helper function based off current position
-            let nextPos = getNextPos(positions[id].pos);
+            let [x, y, z] = getNextPos(positions[id].pos);
+            y = PIECE_HEIGHT;
 
             // Check if next position has an enemy piece on it
-            checkIfCapture(nextPos);
+            checkIfCapture([x, y, z]);
 
-            // Check if next position is a rosette
-            checkIfRosette(nextPos);
-
+            // Check if the new position has a friendly piece blocking current piece
+            if (checkIfFriendly([x, y, z], id)) {
+                return;
+            }
             // Set new position
             setPositions(
                 produce((draft: any) => {
-                    draft[id].pos = nextPos;
+                    draft[id].pos = [x, y, z];
                 })
             );
+
+            // Check if next position is a rosette
+            if (!checkIfRosette([x, y, z])) {
+                // Alternate current player
+                setCurrPlayer(currPlayer === 0 ? 1 : 0);
+
+                // Set hasMoved status
+                setHasMoved(true);
+            }
         }
+    };
+
+    const checkIfFriendly = (pos: Array<number>, currId: number) => {
+        // Determine which indexes of positions we need to check
+        let left, right;
+
+        // Get indexes of friendly pieces
+        if (currPlayer === 0) {
+            left = 0;
+            right = NUM_PIECES;
+        } else {
+            left = NUM_PIECES;
+            right = NUM_PIECES * 2;
+        }
+
+        for (let i = left; i < right; i++) {
+            if (i != currId) {
+                if (positions[i].pos.toString() === pos.toString()) {
+                    console.log('friendly piece is on new position');
+                    return true;
+                }
+            }
+        }
+
+        return false;
     };
 
     /**
@@ -108,8 +144,12 @@ function Game() {
         // Check
         if (rosettePos.includes([x, z].toString())) {
             console.log('rosette');
-            // TODO: Finish
+            // Return true if we landed on a rosette
+            return true;
         }
+
+        // Return false if not a rosette
+        return false;
     };
 
     /**
@@ -125,14 +165,14 @@ function Game() {
         // Get indexes of enemy pieces
         if (currPlayer === 1) {
             left = 0;
-            right = NUM_PIECES - 1;
+            right = NUM_PIECES;
         } else {
             left = NUM_PIECES;
-            right = NUM_PIECES * 2 - 1;
+            right = NUM_PIECES * 2;
         }
 
         // Check if an enemy piece exists in the pos we're about to move to
-        for (let i = left; i <= right; i++) {
+        for (let i = left; i < right; i++) {
             if (positions[i].pos.toString() === pos.toString()) {
                 console.log('is a capture for piece' + i);
 
@@ -203,7 +243,7 @@ function Game() {
 
     const reroll = () => {
         setCurrPlayer(currPlayer == 0 ? 1 : 0);
-        setLastMovedPlayer(lastMovedPlayer == 0 ? 1 : 0);
+        // setLastMovedPlayer(lastMovedPlayer == 0 ? 1 : 0);
     };
 
     const board = useLoader(GLTFLoader, '/board.gltf');
@@ -219,17 +259,17 @@ function Game() {
                     player={i < NUM_PIECES ? 0 : 1}
                     setCurrPlayer={setCurrPlayer}
                     id={i}
-                    lastLanded={lastLanded}
-                    setLastLanded={setLastLanded}
-                    lastMovedPlayer={lastMovedPlayer}
-                    setLastMovedPlayer={setLastMovedPlayer}
-                    occupied={occupied}
-                    setOccupied={setOccupied}
+                    // lastLanded={lastLanded}
+                    // setLastLanded={setLastLanded}
+                    // lastMovedPlayer={lastMovedPlayer}
+                    // setLastMovedPlayer={setLastMovedPlayer}
+                    // occupied={occupied}
+                    // setOccupied={setOccupied}
                     key={i}
                     hasMoved={hasMoved}
                     setHasMoved={setHasMoved}
-                    isReroll={isReroll}
-                    setIsReroll={setIsReroll}
+                    // isReroll={isReroll}
+                    // setIsReroll={setIsReroll}
                     NUM_PIECES={NUM_PIECES}
                     movePiece={movePiece}
                 />
@@ -254,10 +294,7 @@ function Game() {
             <div className={styles.menuContainer}>
                 <p>Current roll: {roll}</p>
                 <p>Current player: {currPlayer}</p>
-                <button
-                    onClick={rollDice}
-                    // disabled={!hasMoved && roll !== 0 && !isReroll}
-                >
+                <button onClick={rollDice} disabled={!hasMoved}>
                     Roll
                 </button>
                 {currPlayer}
