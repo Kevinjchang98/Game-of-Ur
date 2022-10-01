@@ -65,7 +65,7 @@ function Game() {
      */
     const movePiece = (id: number) => {
         // Checks if it's the correct player's piece moving
-        if (checkIfPlayerTurn(id)) {
+        if (checkIfPlayerTurn(id) && !hasMoved) {
             // Get next position from helper function based off current position
             let [x, y, z] = getNextPos(positions[id].pos);
             y = PIECE_HEIGHT;
@@ -88,10 +88,10 @@ function Game() {
             if (!checkIfRosette([x, y, z])) {
                 // Alternate current player
                 setCurrPlayer(currPlayer === 0 ? 1 : 0);
-
-                // Set hasMoved status
-                setHasMoved(true);
             }
+
+            // Set hasMoved status
+            setHasMoved(true);
         }
     };
 
