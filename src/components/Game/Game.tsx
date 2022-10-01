@@ -2,6 +2,7 @@ import { Suspense, useEffect, useState } from 'react';
 import { Canvas, useLoader } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import produce from 'immer';
 
 import styles from './Game.module.css';
 import Piece from '../Piece/Piece';
@@ -11,6 +12,9 @@ function Game() {
     const NUM_PIECES = 3;
     // How high off the board the pieces are
     const PIECE_HEIGHT = 0.4;
+    // Board width for moving pieces
+    const BOARD_WIDTH = 3.5;
+
     // Keep track of current roll
     const [roll, setRoll] = useState<number>(0);
     // ID of current player
@@ -65,6 +69,81 @@ function Game() {
         setHasMoved(false);
     };
 
+    /**
+     * Moves the current piece
+     *
+     * @param id ID of the piece to be moved
+     */
+    const movePiece = (id: number) => {
+        // Checks if it's the correct player's piece moving
+        if (checkIfPlayerTurn(id)) {
+            // Get next position from helper function based off current position
+            let nextPos = getNextPos(positions[id].pos);
+
+            // TODO: Check if next position has an enemy piece on it
+
+            // TODO: Check if next position is a rosette
+
+            // Set new position
+            setPositions(
+                produce((draft: any) => {
+                    draft[id].pos = nextPos;
+                })
+            );
+        }
+    };
+
+    /**
+     * Gets the next position to move to given an array of the current piece
+     * position of form [x, y, z]
+     *
+     * @param currPos Array of current position in the form [x, y, z]
+     */
+    const getNextPos = (currPos: Array<number>) => {
+        let [x, y, z] = currPos;
+
+        if (x !== 0) {
+            // starting part of the board
+            if (z < 1) {
+                if (z - roll < -BOARD_WIDTH) {
+                    x = 0;
+                    z = -BOARD_WIDTH - (z - roll + BOARD_WIDTH) - 1;
+                } else {
+                    z -= roll;
+                }
+            }
+            // finishing part of the board
+            else {
+                // must have an exact roll to finish
+                if (z - roll >= 1.5) z -= roll;
+            }
+        } else {
+            if (z + roll > BOARD_WIDTH) {
+                // must have an exact roll to finish
+                if (BOARD_WIDTH - (z + roll - BOARD_WIDTH) + 1 >= 1.5) {
+                    x = currPlayer === 0 ? -1 : 1;
+                    z = BOARD_WIDTH - (z + roll - BOARD_WIDTH) + 1;
+                }
+            } else z += roll;
+        }
+
+        return [x, y, z];
+    };
+
+    /**
+     * Checks if the pieceId is the current player's piece and is their turn to
+     * move
+     *
+     * @param pieceId ID of the piece to be moved
+     */
+    const checkIfPlayerTurn = (pieceId: number) => {
+        if (currPlayer === 0) {
+            return pieceId < NUM_PIECES;
+        } else {
+            return pieceId >= NUM_PIECES;
+        }
+    };
+
     const reroll = () => {
         setCurrPlayer(currPlayer == 0 ? 1 : 0);
         setLastMovedPlayer(lastMovedPlayer == 0 ? 1 : 0);
@@ -82,7 +161,7 @@ function Game() {
                     roll={roll}
                     player={i < NUM_PIECES ? 0 : 1}
                     setCurrPlayer={setCurrPlayer}
-                    id={i % NUM_PIECES}
+                    id={i}
                     lastLanded={lastLanded}
                     setLastLanded={setLastLanded}
                     lastMovedPlayer={lastMovedPlayer}
@@ -95,6 +174,7 @@ function Game() {
                     isReroll={isReroll}
                     setIsReroll={setIsReroll}
                     NUM_PIECES={NUM_PIECES}
+                    movePiece={movePiece}
                 />
             );
         });
@@ -119,7 +199,7 @@ function Game() {
                 <p>Current player: {currPlayer}</p>
                 <button
                     onClick={rollDice}
-                    disabled={!hasMoved && roll !== 0 && !isReroll}
+                    // disabled={!hasMoved && roll !== 0 && !isReroll}
                 >
                     Roll
                 </button>

@@ -22,6 +22,7 @@ interface PieceProps {
     isReroll: boolean;
     setIsReroll: Function;
     NUM_PIECES: number;
+    movePiece: Function;
 }
 
 type GLTFResult = GLTF & {
@@ -53,6 +54,7 @@ function Piece({
     isReroll,
     setIsReroll,
     NUM_PIECES,
+    movePiece,
 }: PieceProps) {
     // Geometry and texture of pieces
     const { nodes, materials } = useGLTF('/piece.gltf') as GLTFResult;
@@ -61,24 +63,28 @@ function Piece({
     const SPAWN = [player === 0 ? -1 : 1, PIECE_HEIGHT + id / 2, 0.5];
 
     // [x, y, z] coord of position of piece
-    const [position, setPosition] = useState<Array<number>>(SPAWN);
+    // const [position, setPosition] = useState<Array<number>>(SPAWN);
 
     // Animate position to new position
     const { positionAnimated } = useSpring({
-        positionAnimated: positions[id + player * NUM_PIECES].pos,
+        positionAnimated: positions[id].pos,
     });
 
     // Checks if this piece was just landed on and if it should reset to spawn
     useEffect(() => {
         if (
-            position[0] === lastLanded[0] &&
-            position[2] === lastLanded[1] &&
+            positions[id][0] === lastLanded[0] &&
+            positions[id][2] === lastLanded[1] &&
             lastMovedPlayer !== player &&
             !isReroll
         ) {
             // TODO: Pick a place to keep all pieces that still need to be moved
             // Set to the starting position
-            setPosition(SPAWN);
+            setPositions(
+                produce((draft: any) => {
+                    draft[id].pos = SPAWN;
+                })
+            );
             setLastMovedPlayer(id);
             setOccupied((prev: typeof occupied) => {
                 let newOccupied = prev;
@@ -90,111 +96,113 @@ function Piece({
     }, [lastLanded]);
 
     // Moves piece
-    const movePiece = () => {
-        // Only the current player can make the move
-        if (player !== lastMovedPlayer && !hasMoved) {
-            if (roll === 0) {
-                // Update last-moved player
-                setLastMovedPlayer(player);
-                // Set hasMoved to true
-                setHasMoved(true);
-            } else {
-                let [x, y, z] = position;
+    // const movePiece = () => {
+    //     // Only the current player can make the move
+    //     if (player !== lastMovedPlayer && !hasMoved) {
+    //         if (roll === 0) {
+    //             // Update last-moved player
+    //             setLastMovedPlayer(player);
+    //             // Set hasMoved to true
+    //             setHasMoved(true);
+    //         } else {
+    //             let [x, y, z] = positions[id];
 
-                if (x !== 0) {
-                    // starting part of the board
-                    if (z < 1) {
-                        if (z - roll < -3.5) {
-                            x = 0;
-                            z = -3.5 - (z - roll + 3.5) - 1;
-                        } else {
-                            z -= roll;
-                        }
-                    }
-                    // finishing part of the board
-                    else {
-                        // must have an exact roll to finish
-                        if (z - roll >= 1.5) z -= roll;
-                    }
-                } else {
-                    if (z + roll > 3.5) {
-                        // must have an exact roll to finish
-                        if (3.5 - (z + roll - 3.5) + 1 >= 1.5) {
-                            x = player === 0 ? -1 : 1;
-                            z = 3.5 - (z + roll - 3.5) + 1;
-                        }
-                    } else z += roll;
-                }
+    //             if (x !== 0) {
+    //                 // starting part of the board
+    //                 if (z < 1) {
+    //                     if (z - roll < -3.5) {
+    //                         x = 0;
+    //                         z = -3.5 - (z - roll + 3.5) - 1;
+    //                     } else {
+    //                         z -= roll;
+    //                     }
+    //                 }
+    //                 // finishing part of the board
+    //                 else {
+    //                     // must have an exact roll to finish
+    //                     if (z - roll >= 1.5) z -= roll;
+    //                 }
+    //             } else {
+    //                 if (z + roll > 3.5) {
+    //                     // must have an exact roll to finish
+    //                     if (3.5 - (z + roll - 3.5) + 1 >= 1.5) {
+    //                         x = player === 0 ? -1 : 1;
+    //                         z = 3.5 - (z + roll - 3.5) + 1;
+    //                     }
+    //                 } else z += roll;
+    //             }
 
-                if (!occupied[player].includes([x, z].toString())) {
-                    // If square we're moving to isn't occupied by friendly piece
+    //             if (!occupied[player].includes([x, z].toString())) {
+    //                 // If square we're moving to isn't occupied by friendly piece
 
-                    if (
-                        occupied[player === 0 ? 1 : 0].includes(
-                            [x, z].toString()
-                        )
-                    ) {
-                        // TODO: If square we're moving to is occupied by enemy piece
-                    }
+    //                 if (
+    //                     occupied[player === 0 ? 1 : 0].includes(
+    //                         [x, z].toString()
+    //                     )
+    //                 ) {
+    //                     // TODO: If square we're moving to is occupied by enemy piece
+    //                 }
 
-                    // Update last-moved information
-                    setLastLanded([x, z]);
-                    setLastMovedPlayer(player);
+    //                 // Update last-moved information
+    //                 setLastLanded([x, z]);
+    //                 setLastMovedPlayer(player);
 
-                    // Update occupied information
-                    setOccupied((prev: typeof occupied) => {
-                        // Create copy of old state
-                        let newOccupied = prev;
+    //                 // Update occupied information
+    //                 setOccupied((prev: typeof occupied) => {
+    //                     // Create copy of old state
+    //                     let newOccupied = prev;
 
-                        // Add new position if it doesn't exist
-                        if (!newOccupied[player].includes([x, z].toString())) {
-                            newOccupied[player].push([x, z].toString());
-                        }
+    //                     // Add new position if it doesn't exist
+    //                     if (!newOccupied[player].includes([x, z].toString())) {
+    //                         newOccupied[player].push([x, z].toString());
+    //                     }
 
-                        // Remove old position
-                        removeOldPos(newOccupied);
+    //                     // Remove old position
+    //                     removeOldPos(newOccupied);
 
-                        return newOccupied;
-                    });
+    //                     return newOccupied;
+    //                 });
 
-                    // Move finished pieces to the finished area by player
-                    if (x === (player === 0 ? -1 : 1) && z === 1.5) {
-                        x = player === 0 ? -3 - id + 1 : 3 + id - 1;
-                        z = -4.5;
-                    }
+    //                 // Move finished pieces to the finished area by player
+    //                 if (x === (player === 0 ? -1 : 1) && z === 1.5) {
+    //                     x = player === 0 ? -3 - id + 1 : 3 + id - 1;
+    //                     z = -4.5;
+    //                 }
 
-                    // Update position
-                    // setPosition([x, PIECE_HEIGHT, z]);
+    //                 // Update position
+    //                 // setPosition([x, PIECE_HEIGHT, z]);
 
-                    setPositions(
-                        produce((draft: any) => {
-                            draft[id + player * NUM_PIECES].pos = [
-                                x,
-                                PIECE_HEIGHT,
-                                z,
-                            ];
-                        })
-                    );
+    //                 setPositions(
+    //                     produce((draft: any) => {
+    //                         draft[id].pos = [
+    //                             x,
+    //                             PIECE_HEIGHT,
+    //                             z,
+    //                         ];
+    //                     })
+    //                 );
 
-                    // Set hasMoved to true
-                    setHasMoved(true);
+    //                 // Set hasMoved to true
+    //                 setHasMoved(true);
 
-                    // Check for rosette square
-                    if (ROSETTE.includes([x, z].toString())) {
-                        console.log('rosette');
-                        setIsReroll(true);
-                        setCurrPlayer(player == 0 ? 1 : 0);
-                        setLastMovedPlayer(player == 0 ? 1 : 0);
-                        setHasMoved(false);
-                    }
-                }
-            }
-        }
-    };
+    //                 // Check for rosette square
+    //                 if (ROSETTE.includes([x, z].toString())) {
+    //                     console.log('rosette');
+    //                     setIsReroll(true);
+    //                     setCurrPlayer(player == 0 ? 1 : 0);
+    //                     setLastMovedPlayer(player == 0 ? 1 : 0);
+    //                     setHasMoved(false);
+    //                 }
+    //             }
+    //         }
+    //     }
+    // };
 
     // Removes current position from an array: typeof occupied
     const removeOldPos = (arr: typeof occupied) => {
-        const old = arr[player].indexOf([position[0], position[2]].toString());
+        const old = arr[player].indexOf(
+            [positions[id][0], positions[id][2]].toString()
+        );
 
         if (old > -1) {
             arr[player].splice(old, 1);
@@ -215,7 +223,9 @@ function Piece({
                 geometry={nodes.Sphere.geometry}
                 // TODO: Rename materials so we don't have to player + 1
                 material={materials[`Material.00${player + 1}`]}
-                onClick={movePiece}
+                onClick={() => {
+                    movePiece(id);
+                }}
             ></animated.mesh>
         </>
     );
