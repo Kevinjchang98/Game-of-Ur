@@ -1,9 +1,10 @@
 import { useSpring, animated } from '@react-spring/three';
 import { useGLTF } from '@react-three/drei';
 import { GLTF } from 'three-stdlib';
+import { PiecePosition } from '../Game/Game';
 
 interface PieceProps {
-    positions: any;
+    positions: Array<{ pos: PiecePosition }>;
     player: number;
     id: number;
     movePiece: Function;

@@ -7,6 +7,9 @@ import produce from 'immer';
 import styles from './Game.module.css';
 import Piece from '../Piece/Piece';
 
+// Type definition for each piece's coordinates
+export type PiecePosition = [x: number, y: number, z: number];
+
 function Game() {
     // Number of pieces per player
     const NUM_PIECES = 3;
@@ -20,12 +23,14 @@ function Game() {
     // Has made a move and a new roll must be generated
     const [hasMoved, setHasMoved] = useState<boolean>(true);
     // Positions array
-    const [positions, setPositions] = useState<any>([]);
+    const [positions, setPositions] = useState<Array<{ pos: PiecePosition }>>(
+        []
+    );
 
     // Initialize positions for the first time
     useEffect(() => {
         setPositions(() => {
-            let newPosArr = [];
+            let newPosArr: typeof positions = [];
 
             for (let i = 0; i < 2; i++) {
                 for (let j = 0; j < NUM_PIECES; j++) {
@@ -104,7 +109,7 @@ function Game() {
      *
      * @return True if there is a friendly blocking the move, false if not
      */
-    const checkIfFriendly = (pos: Array<number>, currId: number) => {
+    const checkIfFriendly = (pos: PiecePosition, currId: number) => {
         // Determine which indexes of positions we need to check
         let left, right;
 
@@ -136,7 +141,7 @@ function Game() {
      *
      * @param pos Position of the piece we're about to move in form [x, y, z]
      */
-    const checkIfRosette = (pos: Array<number>) => {
+    const checkIfRosette = (pos: PiecePosition) => {
         // Coordinates of rosettes
         const rosettePos = ['-1,-3.5', '-1,2.5', '0,-0.5', '1,-3.5', '1,2.5'];
 
@@ -160,7 +165,7 @@ function Game() {
      *
      * @param pos Position of the piece we're about to move in form [x, y, z]
      */
-    const checkIfCapture = (pos: Array<number>) => {
+    const checkIfCapture = (pos: PiecePosition) => {
         // Determine which indexes of positions we need to check
         let left, right;
 
@@ -196,10 +201,10 @@ function Game() {
      * Gets the next position to move to given an array of the current piece
      * position of form [x, y, z]
      *
-     * @param currPos Array of current position in the form [x, y, z]
+     * @param pos Array of current position in the form [x, y, z]
      */
-    const getNextPos = (currPos: Array<number>) => {
-        let [x, y, z] = currPos;
+    const getNextPos = (pos: PiecePosition) => {
+        let [x, y, z] = pos;
 
         if (x !== 0) {
             // starting part of the board
