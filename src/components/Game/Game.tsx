@@ -17,16 +17,8 @@ function Game() {
     const [roll, setRoll] = useState<number>(0);
     // ID of current player
     const [currPlayer, setCurrPlayer] = useState<number>(0);
-    // // x, z coord of last moved-to square
-    // const [lastLanded, setLastLanded] = useState<Array<number>>([-1, -1]);
-    // // ID of last-moved piece
-    // const [lastMovedPlayer, setLastMovedPlayer] = useState<number>(-1);
-    // // Array of coords filled with pieces
-    // const [occupied, setOccupied] = useState<any>([[], []]);
     // Has made a move and a new roll must be generated
     const [hasMoved, setHasMoved] = useState<boolean>(true);
-    // // If a reroll is allowed by landing on a rosette
-    // const [isReroll, setIsReroll] = useState<boolean>(false);
     // Positions array
     const [positions, setPositions] = useState<any>([]);
 
@@ -241,11 +233,6 @@ function Game() {
         }
     };
 
-    const reroll = () => {
-        setCurrPlayer(currPlayer == 0 ? 1 : 0);
-        // setLastMovedPlayer(lastMovedPlayer == 0 ? 1 : 0);
-    };
-
     const board = useLoader(GLTFLoader, '/board.gltf');
 
     const pieces = Array(NUM_PIECES * 2)
@@ -253,24 +240,10 @@ function Game() {
         .map((e: any, i: number) => {
             return (
                 <Piece
-                    positions={positions}
-                    setPositions={setPositions}
-                    roll={roll}
-                    player={i < NUM_PIECES ? 0 : 1}
-                    setCurrPlayer={setCurrPlayer}
-                    id={i}
-                    // lastLanded={lastLanded}
-                    // setLastLanded={setLastLanded}
-                    // lastMovedPlayer={lastMovedPlayer}
-                    // setLastMovedPlayer={setLastMovedPlayer}
-                    // occupied={occupied}
-                    // setOccupied={setOccupied}
                     key={i}
-                    hasMoved={hasMoved}
-                    setHasMoved={setHasMoved}
-                    // isReroll={isReroll}
-                    // setIsReroll={setIsReroll}
-                    NUM_PIECES={NUM_PIECES}
+                    positions={positions}
+                    player={i < NUM_PIECES ? 0 : 1}
+                    id={i}
                     movePiece={movePiece}
                 />
             );
