@@ -95,6 +95,15 @@ function Game() {
         }
     };
 
+    /**
+     * Check if the position we're about to move to has a friendly piece would
+     * would block the current move. Returns true if there is a friendly
+     *
+     * @param pos Position array of what we want to move to in form [x, y, z]
+     * @param currId ID of the piece we're trying to move
+     *
+     * @return True if there is a friendly blocking the move, false if not
+     */
     const checkIfFriendly = (pos: Array<number>, currId: number) => {
         // Determine which indexes of positions we need to check
         let left, right;
@@ -110,6 +119,7 @@ function Game() {
 
         for (let i = left; i < right; i++) {
             if (i != currId) {
+                // This check technically isn't needed for this to function
                 if (positions[i].pos.toString() === pos.toString()) {
                     console.log('friendly piece is on new position');
                     return true;
