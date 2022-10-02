@@ -1,24 +1,13 @@
 import { useSpring, animated } from '@react-spring/three';
-import { useLoader } from '@react-three/fiber';
-import { useEffect, useState } from 'react';
-import { TextureLoader } from 'three';
 import { useGLTF } from '@react-three/drei';
 import { GLTF } from 'three-stdlib';
+import { PiecePosition } from '../Game/Game';
 
 interface PieceProps {
-    roll: number;
+    positions: Array<{ pos: PiecePosition }>;
     player: number;
-    setCurrPlayer: Function;
     id: number;
-    lastLanded: Array<number>;
-    setLastLanded: Function;
-    lastMovedPlayer: number;
-    setLastMovedPlayer: Function;
-    occupied: any;
-    setOccupied: Function;
-    hasMoved: boolean;
-    setHasMoved: Function;
-    reroll: Function;
+    movePiece: Function;
 }
 
 type GLTFResult = GLTF & {
@@ -30,162 +19,15 @@ type GLTFResult = GLTF & {
 
 const PIECE_HEIGHT = 0.4; // Height of pieces above board
 const PIECE_SCALE = 0.3;
-const ROSETTE = ['-1,-3.5', '-1,2.5', '0,-0.5', '1,-3.5', '1,2.5'];
 
-function Piece({
-    roll,
-    player,
-    setCurrPlayer,
-    id,
-    lastLanded,
-    setLastLanded,
-    lastMovedPlayer,
-    setLastMovedPlayer,
-    occupied,
-    setOccupied,
-    hasMoved,
-    setHasMoved,
-    reroll,
-}: PieceProps) {
+function Piece({ positions, player, id, movePiece }: PieceProps) {
     // Geometry and texture of pieces
     const { nodes, materials } = useGLTF('/piece.gltf') as GLTFResult;
 
-    // Starting position of the pieces
-    const SPAWN = [player === 0 ? -1 : 1, PIECE_HEIGHT + id / 2, 0.5];
-
-    // [x, y, z] coord of position of piece
-    const [position, setPosition] = useState<Array<number>>(SPAWN);
-
     // Animate position to new position
     const { positionAnimated } = useSpring({
-        positionAnimated: position,
+        positionAnimated: positions[id].pos,
     });
-
-    // If a reroll is allowed by landing on a rosette
-    const [isReroll, setIsReroll] = useState<boolean>(false);
-
-    // Checks if this piece was just landed on and if it should reset to spawn
-    useEffect(() => {
-        if (
-            position[0] === lastLanded[0] &&
-            position[2] === lastLanded[1] &&
-            lastMovedPlayer !== player &&
-            !isReroll
-        ) {
-            // TODO: Pick a place to keep all pieces that still need to be moved
-            // Set to the starting position
-            setPosition(SPAWN);
-            setLastMovedPlayer(id);
-            setOccupied((prev: typeof occupied) => {
-                let newOccupied = prev;
-                removeOldPos(newOccupied);
-
-                return newOccupied;
-            });
-        }
-    }, [lastLanded]);
-
-    // Moves piece
-    const movePiece = () => {
-        // Only the current player can make the move
-        if (player !== lastMovedPlayer && !hasMoved) {
-            if (roll === 0) {
-                // Update last-moved player
-                setLastMovedPlayer(player);
-                // Set hasMoved to true
-                setHasMoved(true);
-            } else {
-                let [x, y, z] = position;
-
-                if (x !== 0) {
-                    // starting part of the board
-                    if (z < 1) {
-                        if (z - roll < -3.5) {
-                            x = 0;
-                            z = -3.5 - (z - roll + 3.5) - 1;
-                        } else {
-                            z -= roll;
-                        }
-                    }
-                    // finishing part of the board
-                    else {
-                        // must have an exact roll to finish
-                        if (z - roll >= 1.5) z -= roll;
-                    }
-                } else {
-                    if (z + roll > 3.5) {
-                        // must have an exact roll to finish
-                        if (3.5 - (z + roll - 3.5) + 1 >= 1.5) {
-                            x = player === 0 ? -1 : 1;
-                            z = 3.5 - (z + roll - 3.5) + 1;
-                        }
-                    } else z += roll;
-                }
-
-                if (!occupied[player].includes([x, z].toString())) {
-                    // If square we're moving to isn't occupied by friendly piece
-
-                    if (
-                        occupied[player === 0 ? 1 : 0].includes(
-                            [x, z].toString()
-                        )
-                    ) {
-                        // TODO: If square we're moving to is occupied by enemy piece
-                    }
-
-                    // Update last-moved information
-                    setLastLanded([x, z]);
-                    setLastMovedPlayer(player);
-
-                    // Update occupied information
-                    setOccupied((prev: typeof occupied) => {
-                        // Create copy of old state
-                        let newOccupied = prev;
-
-                        // Add new position if it doesn't exist
-                        if (!newOccupied[player].includes([x, z].toString())) {
-                            newOccupied[player].push([x, z].toString());
-                        }
-
-                        // Remove old position
-                        removeOldPos(newOccupied);
-
-                        return newOccupied;
-                    });
-
-                    // Move finished pieces to the finished area by player
-                    if (x === (player === 0 ? -1 : 1) && z === 1.5) {
-                        x = player === 0 ? -3 - id + 1 : 3 + id - 1;
-                        z = -4.5;
-                    }
-
-                    // Update position
-                    setPosition([x, PIECE_HEIGHT, z]);
-
-                    // Set hasMoved to true
-                    setHasMoved(true);
-
-                    // Check for rosette square
-                    if (ROSETTE.includes([x, z].toString())) {
-                        console.log('rosette');
-                        setIsReroll(true);
-                        setCurrPlayer(player == 0 ? 1 : 0);
-                        setLastMovedPlayer(player == 0 ? 1 : 0);
-                        setHasMoved(false);
-                    }
-                }
-            }
-        }
-    };
-
-    // Removes current position from an array: typeof occupied
-    const removeOldPos = (arr: typeof occupied) => {
-        const old = arr[player].indexOf([position[0], position[2]].toString());
-
-        if (old > -1) {
-            arr[player].splice(old, 1);
-        }
-    };
 
     return (
         <>
@@ -201,7 +43,9 @@ function Piece({
                 geometry={nodes.Sphere.geometry}
                 // TODO: Rename materials so we don't have to player + 1
                 material={materials[`Material.00${player + 1}`]}
-                onClick={movePiece}
+                onClick={() => {
+                    movePiece(id);
+                }}
             ></animated.mesh>
         </>
     );
