@@ -18,4 +18,6 @@ A set of four die which each have a 50% chance to roll a 0 and 50% chance to rol
 
 Only one piece can occupy a tile at a time. If it's a tile in the middle set of tiles, one player landing on another player's piece will cause the landed-on piece returning back to the start (off the board).
 
+If you land on a tile with a rosette, you're allowed to roll and take another turn.
+
 An exact roll is needed to move a piece off the board at the end; e.g., if you are 1 tile away, you cannot move your piece off the end until you roll exactly a 1.
