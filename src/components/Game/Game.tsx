@@ -91,7 +91,7 @@ function Game() {
             // Set new position
             setPositions(
                 produce((draft: any) => {
-                    draft[id].pos = [x, y, z];
+                    draft[id].pos = moveAwayIfFinish([x, y, z], id);
                 })
             );
 
@@ -139,6 +139,29 @@ function Game() {
         }
 
         return false;
+    };
+
+    /**
+     * Move pieces to the finished area by player if finished.
+     * @param pos Position array of what we want to move to in form [x, y, z]
+     * @param currId ID of the piece we're trying to move
+     * @returns updated [x, y, z]. If piece is not finished, return the original
+     * corrds.
+     */
+    const moveAwayIfFinish = (pos: PiecePosition, currId: number) => {
+        // Move piece to finished area by player if the piece is off the board
+        let x = pos[0];
+        let y = pos[1];
+        let z = pos[2];
+        // if (currId < NUM_PIECES && z.toString() === FINISH_ZCOORD)
+        if (x === (currId < NUM_PIECES ? -1 : 1) && z.toString() === '1.5') {
+            x =
+                currId < NUM_PIECES
+                    ? -3 - currId + 1
+                    : 3 - NUM_PIECES + currId - 1;
+            z = -4.5;
+        }
+        return [x, y, z];
     };
 
     /**
