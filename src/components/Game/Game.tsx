@@ -69,6 +69,13 @@ function Game() {
      * @param id ID of the piece to be moved
      */
     const movePiece = (id: number) => {
+        // Pass if roll is 0
+        if (roll === 0) {
+            setHasMoved(true);
+            setCurrPlayer(currPlayer === 0 ? 1 : 0);
+            return;
+        }
+
         // Checks if it's the correct player's piece moving
         if (checkIfPlayerTurn(id) && !hasMoved) {
             // Get next position from helper function based off current position
