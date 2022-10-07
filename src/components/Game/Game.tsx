@@ -76,6 +76,11 @@ function Game() {
 
             y = PIECE_HEIGHT;
 
+            // Check if next position is central rosette and has an enemy piece on it
+            if (checkIfEnemyOnCentralRosette([x, y, z], id)) {
+                return;
+            }
+
             // Check if next position has an enemy piece on it
             checkIfCapture([x, y, z]);
 
@@ -130,6 +135,47 @@ function Game() {
                     console.log('friendly piece is on new position');
                     return true;
                 }
+            }
+        }
+
+        return false;
+    };
+
+    /**
+     * Check if the position we're about to move to is the central rosette and
+     * has an enemy piece landed on it.
+     *
+     * @param pos Position array of what we want to move to in form [x, y, z]
+     * @param currId ID of the piece we're trying to move
+     * @returns True if it is the central rosette capture move, false if not
+     */
+    const checkIfEnemyOnCentralRosette = (
+        pos: PiecePosition,
+        currId: number
+    ) => {
+        // Determine which indexes of positions we need to check
+        let left, right;
+
+        // Pieces on central rosette cannot be captured
+        const CENTRAL_ROSETTE = '0,0.4,-0.5';
+
+        if (currPlayer === 1) {
+            left = 0;
+            right = NUM_PIECES;
+        } else {
+            left = NUM_PIECES;
+            right = NUM_PIECES * 2;
+        }
+
+        for (let i = left; i < right; i++) {
+            if (
+                positions[i].pos.toString() === pos.toString() &&
+                positions[i].pos.toString() === CENTRAL_ROSETTE
+            ) {
+                console.log(
+                    'enemy piece on central rosette cannot be captured'
+                );
+                return true;
             }
         }
 
